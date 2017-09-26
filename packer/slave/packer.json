@@ -1,0 +1,32 @@
+{
+	"description": "Slave",
+	"builders": [
+		{
+			"ssh_username": "admin",
+			"region": "us-east-1",
+			"secret_key": "{{user `aws_secret_key`}}",
+			"access_key": "{{user `aws_access_key`}}",
+			"source_ami": "ami-ac5e55d7",
+			"instance_type": "m4.large",
+			"ami_name": "slave-{{timestamp}}",
+			"type": "amazon-ebs"
+		}
+	],
+	"provisioners": [
+		{
+			"type": "file",
+			"source": "files",
+			"destination": "/tmp/"
+		},
+		{
+			"type": "shell",
+			"scripts": [
+				"scripts/packages.sh",
+				"scripts/download-files.sh",
+				"scripts/consul.sh",
+				"scripts/nomad.sh"
+			],
+			"execute_command": "{{.Vars}} sudo --preserve-env bash -x '{{.Path}}'"
+		}
+	]
+}

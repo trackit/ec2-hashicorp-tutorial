@@ -1,0 +1,23 @@
+description: Master
+builders:
+  - type: amazon-ebs
+    access_key: '{{user `aws_access_key`}}'
+    secret_key: '{{user `aws_secret_key`}}'
+    region: us-east-1
+    source_ami: ami-ac5e55d7
+    instance_type: t2.nano
+    ssh_username: admin
+    ami_name: master-{{timestamp}}
+provisioners:
+  - type: file
+    source: files
+    destination: /tmp/
+  - type: shell
+    execute_command: &root-execcmd "{{.Vars}} sudo --preserve-env bash -x '{{.Path}}'"
+    scripts:
+      - scripts/packages.sh
+      - scripts/download-files.sh
+      - scripts/consul.sh
+      - scripts/nomad.sh
+
+# vim: set ts=2 sts=2 et:

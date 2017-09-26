@@ -1,0 +1,27 @@
+= Tutorial: Hashicorp Suite with EC2
+
+This is the accompanying repository for this article on the Trackit blog:
+https://blog.trackit.io/ec2-hashicorp-1/. It contains Terraform and Packer
+specifications which can build a minimal EC2 cluster with service discovery and
+automated job placement using Consul and Nomad.
+
+== Build the AMIs
+
+In order to build the AMIs you will need to have _Packer_ installed. With that
+done, you can go to _/packer/master/_ and _/packer/slave/_ and simply run
+`packer build packer.json`.
+
+Make sure to take note of the IDs for the AMIs you built.
+
+== Deploy the infrastructure
+
+You need an AWS account with admin access to deploy the infrastructure. First
+edit _/terraform/amis.tf_, adding the AMI IDs you got from building the AMIs
+with Packer. Also place your public SSH key in _/terraform/ssh.pub_ so you can
+later SSH into your instances with the user `admin`.
+
+Then run `terraform plan -out tf.plan`, make sure it doesn’t plan on doing
+something Terraform shouldn’t do, and run `terraform apply tf.plan`. In just a
+few minutes you should get a fault-resistant setup where _Consul_ handles
+service discovery and _Nomad_ manages your tasks by placing them on the slave
+instances in an efficient manner.
